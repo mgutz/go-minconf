@@ -7,6 +7,7 @@ import (
 	"os"
 	"strings"
 
+	"github.com/mgutz/minimist"
 	"github.com/mgutz/str"
 )
 
@@ -14,10 +15,6 @@ func mustNotError(e error) {
 	if e != nil {
 		panic(e)
 	}
-}
-
-func argvToMap() map[string]interface{} {
-	return make(map[string]interface{})
 }
 
 // removeComments removes single-line eol comments
@@ -44,6 +41,7 @@ func stringOr(v interface{}, value string) string {
 	return result
 }
 
+// LoadFile loads configuration from JSON file.
 func LoadFile(jsonFile string) (*MinConf, error) {
 	content, err := ioutil.ReadFile(jsonFile)
 	if err != nil {
@@ -52,8 +50,9 @@ func LoadFile(jsonFile string) (*MinConf, error) {
 	return LoadString(string(content))
 }
 
+// LoadString loads configuration from JSON string.
 func LoadString(jsonString string) (*MinConf, error) {
-	const META_KEY = "$"
+	const metaKey = "$"
 	jsonString = removeComments(jsonString)
 
 	var m map[string]interface{}
@@ -67,9 +66,9 @@ func LoadString(jsonString string) (*MinConf, error) {
 	}
 
 	// $ = minconf options
-	meta := m[META_KEY].(map[string]interface{})
+	meta := m[metaKey].(map[string]interface{})
 	if meta == nil {
-		return nil, errors.New(META_KEY + " property is required")
+		return nil, errors.New(metaKey + " property is required")
 	}
 
 	var options map[string]interface{}
@@ -103,6 +102,11 @@ func LoadString(jsonString string) (*MinConf, error) {
 
 				switch mergeable {
 				case "ARGV":
+					src = make(map[string]interface{})
+					args := minimist.Parse(os.Args[1:], nil, nil, nil)
+					for key, val := range args {
+						src[key] = val
+					}
 
 				case "ENV":
 					src = make(map[string]interface{})

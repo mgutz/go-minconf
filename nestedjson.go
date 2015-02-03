@@ -203,7 +203,7 @@ func (n *NestedJson) String(path string) (string, error) {
 	case string:
 		return rv, nil
 	default:
-		return "", errors.New(fmt.Sprintf("%s is not a string", path, o))
+		return "", errors.New(fmt.Sprintf("%s is not a string: %v", path, o))
 	}
 }
 
@@ -220,7 +220,7 @@ func (n *NestedJson) Int(path string) (int, error) {
 	case float64:
 		return int(rv), nil
 	default:
-		return 0, errors.New(fmt.Sprintf("%s is not an integer", path, o))
+		return 0, errors.New(fmt.Sprintf("%s is not an integer: %v", path, o))
 	}
 }
 
@@ -237,7 +237,7 @@ func (n *NestedJson) Float(path string) (float64, error) {
 	case float64:
 		return rv, nil
 	default:
-		return 0, errors.New(fmt.Sprintf("%s is not a float", path, o))
+		return 0, errors.New(fmt.Sprintf("%s is not a float: %v", path, o))
 	}
 }
 
@@ -252,7 +252,7 @@ func (n *NestedJson) Bool(path string) (bool, error) {
 	case bool:
 		return rv, nil
 	default:
-		return false, errors.New(fmt.Sprintf("%s is not a bool", path, o))
+		return false, errors.New(fmt.Sprintf("%s is not a bool: %v", path, o))
 	}
 }
 
@@ -265,7 +265,7 @@ func (n *NestedJson) Array(path string) ([]interface{}, error) {
 	case []interface{}:
 		return rv, nil
 	default:
-		return nil, errors.New(fmt.Sprintf("%s is not an Array", path, o))
+		return nil, errors.New(fmt.Sprintf("%s is not an Array: %v", path, o))
 	}
 }
 
@@ -278,6 +278,6 @@ func (n *NestedJson) Map(path string) (map[string]interface{}, error) {
 	case map[string]interface{}:
 		return rv, nil
 	default:
-		return nil, errors.New(fmt.Sprintf("%s is not a map", path, o))
+		return nil, errors.New(fmt.Sprintf("%s is not a map:%v", path, o))
 	}
 }

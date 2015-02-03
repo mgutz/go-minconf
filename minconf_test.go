@@ -89,6 +89,34 @@ func TestEnvMerging(t *testing.T) {
 	assert.Equal(mc.MustString("server.hostname"), "localhost")
 }
 
+func TestArgvMerging(t *testing.T) {
+	assert := assert.New(t)
+
+	oldArgs := os.Args
+
+	os.Args = []string{"cmd", "--server.port", "9000", "--server.hostname=localhost"}
+
+	config := `{
+		"$": {
+			"envs": {
+				"development": "common ARGV"
+			}
+		},
+
+		"common": {
+			"server": {
+				"hostname": "localhost",
+				"port": 8080
+			}
+		}
+	}`
+
+	mc, _ := LoadString(config)
+	assert.Equal(mc.MustInt("server.port"), 9000)
+	assert.Equal(mc.MustString("server.hostname"), "localhost")
+	os.Args = oldArgs
+}
+
 func TestComments(t *testing.T) {
 	config := `{
 		// this is a comment

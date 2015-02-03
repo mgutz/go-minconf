@@ -6,6 +6,7 @@ import (
 )
 
 var (
+	// MaxDepth is the maximum depth of nested JSON structure
 	MaxDepth = 32
 )
 
