@@ -7,7 +7,6 @@ import (
 	"os"
 	"strings"
 
-	"github.com/mgutz/minimist"
 	"github.com/mgutz/str"
 )
 
@@ -103,10 +102,10 @@ func LoadString(jsonString string) (*MinConf, error) {
 				switch mergeable {
 				case "ARGV":
 					src = make(map[string]interface{})
-					args := minimist.Parse(os.Args[1:], nil, nil, nil)
-					for key, val := range args {
-						src[key] = val
-					}
+					// args := minimist.Parse(os.Args[1:], nil, nil, nil)
+					// for key, val := range args {
+					// 	src[key] = val
+					// }
 
 				case "ENV":
 					src = make(map[string]interface{})
