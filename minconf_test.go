@@ -24,10 +24,10 @@ func TestDefaults(t *testing.T) {
 		}
 	}`
 
-	mc, _ := LoadString(config)
+	mc, _ := NewFromString(config)
 	assert.Equal(mc.Env, "development")
 	assert.Equal(mc.DefaultEnv, "development")
-	assert.Equal(mc.EnvSelector, "GO_ENV")
+	assert.Equal(mc.EnvSelector, "RUN_ENV")
 	assert.Equal(mc.MustInt("server.port"), 8080)
 }
 
@@ -55,7 +55,7 @@ func TestMerging(t *testing.T) {
 		}
 	}`
 
-	mc, _ := LoadString(config)
+	mc, _ := NewFromString(config)
 	assert.Equal(mc.MustInt("server.port"), 8080)
 	assert.Equal(mc.MustString("server.hostname"), "dev.lan")
 }
@@ -68,7 +68,7 @@ func TestEnvMerging(t *testing.T) {
 	config := `{
 		"$": {
 			"options": {
-				"replaceWithDot": "__"
+				"dotString": "__"
 			},
 
 			"envs": {
@@ -84,7 +84,7 @@ func TestEnvMerging(t *testing.T) {
 		}
 	}`
 
-	mc, _ := LoadString(config)
+	mc, _ := NewFromString(config)
 	assert.Equal(mc.MustInt("server.port"), 9000)
 	assert.Equal(mc.MustString("server.hostname"), "localhost")
 }
@@ -93,9 +93,7 @@ func TestArgvMerging(t *testing.T) {
 	assert := assert.New(t)
 
 	oldArgs := os.Args
-
 	os.Args = []string{"cmd", "--server.port", "9000", "--server.hostname=localhost"}
-
 	config := `{
 		"$": {
 			"envs": {
@@ -110,8 +108,7 @@ func TestArgvMerging(t *testing.T) {
 			}
 		}
 	}`
-
-	mc, _ := LoadString(config)
+	mc, _ := NewFromString(config)
 	assert.Equal(mc.MustInt("server.port"), 9000)
 	assert.Equal(mc.MustString("server.hostname"), "localhost")
 	os.Args = oldArgs
@@ -131,6 +128,6 @@ func TestComments(t *testing.T) {
 		}
 	}`
 
-	mc, _ := LoadString(config)
+	mc, _ := NewFromString(config)
 	assert.Equal(t, mc.MustString("url"), "http://thisisnot/a/comment")
 }

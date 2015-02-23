@@ -7,6 +7,7 @@ import (
 	"os"
 	"strings"
 
+	"github.com/mgutz/go-nestedjson"
 	"github.com/mgutz/str"
 )
 
@@ -40,17 +41,28 @@ func stringOr(v interface{}, value string) string {
 	return result
 }
 
-// LoadFile loads configuration from JSON file.
-func LoadFile(jsonFile string) (*MinConf, error) {
+// New creates a default instance of Minconf which loads ENV and ARGV.
+func New() (*MinConf, error) {
+	json := `{
+		"$": {
+			"envs": {"development": "dev ENV ARGV"},
+		},
+		"dev": {}
+	}`
+	return NewFromString(json)
+}
+
+// NewFromFile loads configuration from JSON file.
+func NewFromFile(jsonFile string) (*MinConf, error) {
 	content, err := ioutil.ReadFile(jsonFile)
 	if err != nil {
 		return nil, err
 	}
-	return LoadString(string(content))
+	return NewFromString(string(content))
 }
 
-// LoadString loads configuration from JSON string.
-func LoadString(jsonString string) (*MinConf, error) {
+// NewFromString loads configuration from JSON string.
+func NewFromString(jsonString string) (*MinConf, error) {
 	const metaKey = "$"
 	jsonString = removeComments(jsonString)
 
@@ -77,9 +89,9 @@ func LoadString(jsonString string) (*MinConf, error) {
 		options = meta["options"].(map[string]interface{})
 	}
 
-	envSelector := stringOr(options["envSelector"], "GO_ENV")
+	envSelector := stringOr(options["envSelector"], "RUN_ENV")
 	defaultEnv := stringOr(options["defaultEnv"], "development")
-	replaceWithDot := stringOr(options["replaceWithDot"], "__")
+	dotString := stringOr(options["dotString"], "__")
 
 	envs := meta["envs"].(map[string]interface{})
 	if envs == nil {
@@ -101,16 +113,15 @@ func LoadString(jsonString string) (*MinConf, error) {
 
 				switch mergeable {
 				case "ARGV":
-					src = make(map[string]interface{})
-					// args := minimist.Parse(os.Args[1:], nil, nil, nil)
-					// for key, val := range args {
-					// 	src[key] = val
-					// }
+					src, err = newArgvMap().Config()
+					if err != nil {
+						return nil, err
+					}
 
 				case "ENV":
-					src = make(map[string]interface{})
-					for envKey, envVal := range envMap(replaceWithDot) {
-						src[envKey] = envVal
+					src, err = newEnvMap(dotString).Config()
+					if err != nil {
+						return nil, err
 					}
 
 				default:
@@ -128,18 +139,17 @@ func LoadString(jsonString string) (*MinConf, error) {
 		}
 	}
 
-	njson := NewNestedJson(base)
-	internalMap := njson.Data()
+	nj := nestedjson.NewFromMap(base)
+	internalMap := nj.Data().(map[string]interface{})
 
 	// some keys have dots such as ENV keys that had "__" replaced with "."
-	// not sure if this is safe as Data() is being modi?
 	for key, value := range internalMap {
 		if strings.Contains(key, ".") {
-			delete(njson.Data(), key)
-			njson.Set(key, value)
+			delete(internalMap, key)
+			nj.Set(key, value)
 		}
 	}
 
-	mc := &MinConf{NestedJson: njson, EnvSelector: envSelector, DefaultEnv: defaultEnv, Env: env}
+	mc := &MinConf{Map: nj, EnvSelector: envSelector, DefaultEnv: defaultEnv, Env: env}
 	return mc, nil
 }
