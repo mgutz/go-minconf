@@ -1,6 +1,6 @@
 ## Sample Configuration
 
-```json
+```js
 {
     "$": {
         // these are the default options and this entire section may be omitted
