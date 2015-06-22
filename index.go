@@ -7,7 +7,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/mgutz/go-nestedjson"
+	"github.com/mgutz/jo/v1"
 	"github.com/mgutz/str"
 )
 
@@ -139,7 +139,7 @@ func NewFromString(jsonString string) (*MinConf, error) {
 		}
 	}
 
-	nj := nestedjson.NewFromMap(base)
+	nj := jo.NewFromMap(base)
 	internalMap := nj.Data().(map[string]interface{})
 
 	// some keys have dots such as ENV keys that had "__" replaced with "."
@@ -150,6 +150,6 @@ func NewFromString(jsonString string) (*MinConf, error) {
 		}
 	}
 
-	mc := &MinConf{Map: nj, EnvSelector: envSelector, DefaultEnv: defaultEnv, Env: env}
+	mc := &MinConf{Object: nj, EnvSelector: envSelector, DefaultEnv: defaultEnv, Env: env}
 	return mc, nil
 }

@@ -1,10 +1,10 @@
 package minconf
 
-import "github.com/mgutz/go-nestedjson"
+import "github.com/mgutz/jo/v1"
 
 // MinConf is the main configuration object.
 type MinConf struct {
-	*nestedjson.Map
+	*jo.Object
 
 	// Wd is work directory
 	Wd string
