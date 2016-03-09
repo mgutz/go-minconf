@@ -91,7 +91,7 @@ func NewFromString(jsonString string) (*MinConf, error) {
 
 	envSelector := stringOr(options["envSelector"], "RUN_ENV")
 	defaultEnv := stringOr(options["defaultEnv"], "development")
-	dotString := stringOr(options["dotString"], "__")
+	dotAlias := stringOr(options["dotAlias"], "__")
 
 	envs := meta["envs"].(map[string]interface{})
 	if envs == nil {
@@ -119,7 +119,7 @@ func NewFromString(jsonString string) (*MinConf, error) {
 					}
 
 				case "ENV":
-					src, err = newEnvMap(dotString).Config()
+					src, err = newEnvMap(dotAlias).Config()
 					if err != nil {
 						return nil, err
 					}

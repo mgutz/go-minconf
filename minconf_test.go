@@ -68,7 +68,7 @@ func TestEnvMerging(t *testing.T) {
 	config := `{
 		"$": {
 			"options": {
-				"dotString": "__"
+				"dotAlias": "__"
 			},
 
 			"envs": {
