@@ -1,0 +1,12 @@
+package: github.com/mgutz/go-minconf
+import:
+- package: github.com/mgutz/jo
+  version: next
+- package: github.com/mgutz/minimist
+- package: github.com/mgutz/str
+  version: v1.2.0
+testImport:
+- package: github.com/stretchr/testify
+  version: v1.1.4
+  subpackages:
+  - assert

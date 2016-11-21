@@ -1,6 +1,6 @@
 package minconf
 
-import "github.com/mgutz/jo/v1"
+import "github.com/mgutz/jo"
 
 // MinConf is the main configuration object.
 type MinConf struct {

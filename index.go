@@ -7,7 +7,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/mgutz/jo/v1"
+	"github.com/mgutz/jo"
 	"github.com/mgutz/str"
 )
 
